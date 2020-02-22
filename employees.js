@@ -43,7 +43,7 @@ function start() {
       } else if (answer.action === "View Employees") {
         viewEmployees();
       } else if (answer.action === "View Roles") {
-        viewRoles();
+        findAllRoles();
       } else if (answer.action === "Add Department") {
         addDepartment();
       } else if (answer.action === "Add Role") {
@@ -73,7 +73,7 @@ function addDepartment() {
 function addRole() {
   inquirer
     .prompt({
-      name: "roleAdd",
+      name: "roleTitle",
       type: "input",
       message: "What is the name of the Role?",
     }, {
@@ -88,7 +88,7 @@ function addRole() {
       
     })
     .then(function (answer) {
-      connection.query(`INSERT INTO role (title, salary, department_id) VALUES ("${answer.roleAdd}, ${answer.salary}, ${answer.departmentId}")`, function (err, res) {
+      connection.query(`INSERT INTO role (title, salary, department_id) VALUES ("${answer.roleTitle}, ${answer.salary},                   ${answer.departmentId}")`, function (err, res) {
         if (err) throw err;
       });
       start();
@@ -96,7 +96,29 @@ function addRole() {
 }
 
 function addEmployee() {
-
+  inquirer
+    .prompt({
+      name: "firstName",
+      type: "input",
+      message: "What is the employee's first name?",
+    }, {
+      name: "secondName",
+      type: "input",
+      message: "What is the employee's last name?",
+    }, {
+      name: "roleId",
+      type: "input",
+      message: "What is the employee's role id?"
+    }, {
+      name: "managerid",
+      type: "input",
+      message: "What is the employee's manager id?"
+    })
+    .then(function (answer) {
+      connection.query(`INSERT INTO department (name) VALUES ("${answer.departmentAdd}")`, function (err, res) {
+        if (err) throw err;
+      });
+    })
 }
 
 function viewEmployees() {
@@ -129,3 +151,8 @@ function viewRoles() {
   start();
 }
 
+function findAllRoles() {
+  connection.query(
+    "SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department on role.department_id = department.id;"
+  );
+}
